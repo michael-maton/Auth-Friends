@@ -1,6 +1,6 @@
 import './App.css';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 
 import Login from './components/Login';
@@ -9,12 +9,13 @@ import PrivateRoute from "./components/PrivateRoute";
 import { axiosWithAuth } from './utils/axiosWithAuth';
 
 function App() {
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const logout = () => {
     axiosWithAuth()
       .post("/logout", {userToken: localStorage.getItem("token")})
     .then(res => {
       localStorage.removeItem("token");
+      setIsLoggedIn(false);
       window.location.href = "/login";
     })
     .catch(err => {
@@ -27,19 +28,23 @@ function App() {
     <div className="App">
       <ul>
         <li>
-          <Link to="/login">Login</Link>
+          {!isLoggedIn && <Link to="/login">Login</Link>}
         </li>
         <li>
-          <Link onClick={logout}>Logout</Link>
+          {isLoggedIn && <Link onClick={logout}>Logout</Link>}
         </li>
         <li>
-          <Link to="/friends">Friends</Link>
+          {isLoggedIn && <Link to="/friends">Friends</Link>}
         </li>
       </ul>
       <Switch>
         <PrivateRoute exact path="/friends" component={Friends} />
-        <Route path="/login" component={Login} />
-        <Route component={Login} />
+        <Route path="/login" render={(props) => {
+              return <Login {...props} setIsLoggedIn={setIsLoggedIn} />;
+            }} />
+        <Route render={(props) => {
+              return <Login {...props} setIsLoggedIn={setIsLoggedIn} />;
+            }} />
       </Switch>
     </div>
   </Router>
