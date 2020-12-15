@@ -1,0 +1,15 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+ul {
+  display: flex;
+  justify-content: space-evenly;
+  
+}
+
+li{
+  list-style-type: none;
+}
